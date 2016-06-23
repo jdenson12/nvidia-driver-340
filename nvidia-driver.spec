@@ -29,16 +29,15 @@
 
 Name:           nvidia-driver
 Version:        340.96
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        NVIDIA's proprietary display driver for NVIDIA graphic cards
 Epoch:          2
 License:        NVIDIA License
 URL:            http://www.nvidia.com/object/unix.html
-ExclusiveArch:  %{ix86} x86_64 armv7hl
+ExclusiveArch:  %{ix86} x86_64
 
 Source0:        %{name}-%{version}-i386.tar.xz
 Source1:        %{name}-%{version}-x86_64.tar.xz
-Source2:        %{name}-%{version}-armv7hl.tar.xz
 Source10:       99-nvidia-modules.conf
 Source11:       10-nvidia-driver.conf
 Source12:       99-nvidia-ignoreabi.conf
@@ -175,10 +174,6 @@ such as OpenGL headers.
 %setup -q -T -b 1 -n %{name}-%{version}-x86_64
 %endif
 
-%ifarch armv7hl
-%setup -q -T -b 2 -n %{name}-%{version}-armv7hl
-%endif
-
 # Print and remove execstack from binaries
 execstack -q nvidia-cuda-mps-control nvidia-cuda-mps-server lib*.so.*
 execstack -c nvidia-cuda-mps-control nvidia-cuda-mps-server lib*.so.*
@@ -197,24 +192,19 @@ mkdir -p %{buildroot}%{_libdir}/nvidia/xorg/
 mkdir -p %{buildroot}%{_libdir}/vdpau/
 mkdir -p %{buildroot}%{_libdir}/xorg/modules/drivers/
 mkdir -p %{buildroot}%{_mandir}/man1/
-mkdir -p %{buildroot}%{_prefix}/lib/modules-load.d/
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/
 mkdir -p %{buildroot}%{_datadir}/X11/xorg.conf.d/
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 mkdir -p %{buildroot}%{_sysconfdir}/nvidia/
 mkdir -p %{buildroot}%{_udevrulesdir}
 mkdir -p %{buildroot}%{_modprobe_d}/
-%ifarch %{ix86} x86_64
 mkdir -p %{buildroot}%{_sysconfdir}/OpenCL/vendors/
-%endif
 
 # Install headers
 install -p -m 0644 *.h %{buildroot}%{_includedir}/nvidia/GL/
 
-%ifarch %{ix86} x86_64
 # OpenCL config
 install -p -m 0755 nvidia.icd %{buildroot}%{_sysconfdir}/OpenCL/vendors/
-%endif
 
 # Library search path
 echo "%{_libdir}/nvidia" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/nvidia-%{_lib}.conf
@@ -235,7 +225,7 @@ install -p -m 0644 nvidia-{smi,cuda-mps-control}*.gz %{buildroot}%{_mandir}/man1
 install -p -m 0644 %{SOURCE10} %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/99-nvidia-modules.conf
 sed -i -e 's|@LIBDIR@|%{_libdir}|g' %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/99-nvidia-modules.conf
 
-%if 0%{?rhel}
+%if 0%{?rhel} == 6
 install -p -m 0644 %{SOURCE13} %{buildroot}%{_sysconfdir}/X11/xorg.conf.nvidia
 %endif
 
@@ -269,9 +259,7 @@ cp -a \
     libGLESv1_CM.so* \
     libGLESv2.so* \
     libEGL.so* \
-%ifarch %{ix86} x86_64
     libOpenCL.so* \
-%endif
     %{buildroot}%{_libdir}/nvidia/
 
 # Install unique libraries
@@ -310,7 +298,7 @@ if [ "$1" -eq "0" ]; then
 %if 0%{?fedora} || 0%{?rhel} >= 7
   sed -i -e 's/%{_dracutopts} //g' /etc/default/grub
 %endif
-%if 0%{?rhel}
+%if 0%{?rhel} == 6
   # Backup and disable previously used xorg.conf
   [ -f %{_sysconfdir}/X11/xorg.conf ] && mv %{_sysconfdir}/X11/xorg.conf %{_sysconfdir}/X11/xorg.conf.nvidia_uninstalled &>/dev/null
 %endif
@@ -338,7 +326,7 @@ fi ||:
 # X.org configuration files
 %config(noreplace) %{_sysconfdir}/X11/xorg.conf.d/99-nvidia-modules.conf
 
-%if 0%{?rhel}
+%if 0%{?rhel} == 6
 %config(noreplace) %{_sysconfdir}/X11/xorg.conf.nvidia
 %endif
 
@@ -351,17 +339,15 @@ fi ||:
 %endif
 
 %files cuda
-%ifarch %{ix86} x86_64
-%{_sysconfdir}/OpenCL/vendors/*
-%endif
 %{_bindir}/nvidia-cuda-mps-control
 %{_bindir}/nvidia-cuda-mps-server
 %{_bindir}/nvidia-debugdump
 %{_bindir}/nvidia-smi
 %{_mandir}/man1/nvidia-cuda-mps-control.1.*
 %{_mandir}/man1/nvidia-smi.*
+%{_modprobe_d}/nvidia-uvm.conf
+%{_sysconfdir}/OpenCL/vendors/*
 %{_udevrulesdir}/60-nvidia-uvm.rules
-%{_prefix}/lib/modules-load.d/nvidia-uvm.conf
 
 %files libs
 %dir %{_libdir}/nvidia
@@ -389,15 +375,13 @@ fi ||:
 %{_libdir}/libcuda.so.%{version}
 %{_libdir}/libnvcuvid.so.1
 %{_libdir}/libnvcuvid.so.%{version}
+%{_libdir}/libnvidia-compiler.so.%{version}
 %{_libdir}/libnvidia-encode.so.1
 %{_libdir}/libnvidia-encode.so.%{version}
 %{_libdir}/libnvidia-opencl.so.1
 %{_libdir}/libnvidia-opencl.so.%{version}
-%ifarch %{ix86} x86_64
 %{_libdir}/nvidia/libOpenCL.so.1
 %{_libdir}/nvidia/libOpenCL.so.1.0.0
-%{_libdir}/libnvidia-compiler.so.%{version}
-%endif
 
 %files NvFBCOpenGL
 %{_libdir}/libnvidia-fbc.so.1
@@ -413,6 +397,21 @@ fi ||:
 %{_includedir}/nvidia/
 
 %changelog
+* Thu Jun 23 2016 Simone Caronni <negativo17@gmail.com> - 2:340.96-2
+- Load nvidia-uvm.ko through a soft dependency on nvidia.ko. This avoids
+  inserting the nvidia-uvm configuration file in the initrd. Since the module is
+  not (and should not be) in the initrd, this prevents the (harmless) module
+  loading error in Plymouth.
+- Move all libraries that do not replace system libraries in the default
+  directories. There is no reason to keep them separate and this helps for
+  building programs that link to these libraries (like nvidia-settings on NVML)
+  and for writing out filters in the SPEC file.
+- Rework completely symlink creation using ldconfig, remove useless symlink and
+  trim devel subpackage.
+- Remove ARM (Carma, Kayla) support.
+- Ignore ABI configuration file moved to Fedora 24+.
+- Use new X.org OutputClass loader for RHEL 7 (X.org 1.16+, RHEL 7.2+).
+
 * Tue Nov 17 2015 Simone Caronni <negativo17@gmail.com> - 2:340.96-1
 - Update to 340.96.
 - Add kernel command line also to Grub default files for grub2-mkconfig
