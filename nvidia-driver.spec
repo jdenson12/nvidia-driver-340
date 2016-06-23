@@ -42,7 +42,7 @@ Source10:       99-nvidia-modules.conf
 Source11:       10-nvidia-driver.conf
 Source12:       99-nvidia-ignoreabi.conf
 Source13:       xorg.conf.nvidia
-Source20:       blacklist-nouveau.conf
+Source20:       nvidia.conf
 Source21:       alternate-install-present
 Source22:       60-nvidia-uvm.rules
 Source23:       nvidia-uvm.conf
@@ -212,8 +212,8 @@ echo "%{_libdir}/nvidia" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/nvidia-%{_lib
 # Blacklist nouveau
 install -p -m 0644 %{SOURCE20} %{buildroot}%{_modprobe_d}/
 
-# Autoload nvidia-uvm module
-install -p -m 0644 %{SOURCE23} %{buildroot}%{_prefix}/lib/modules-load.d/
+# Autoload nvidia-uvm module after nvidia module
+install -p -m 0644 %{SOURCE23} %{buildroot}%{_modprobe_d}/
 
 # Install binaries
 install -p -m 0755 nvidia-{debugdump,smi,cuda-mps-control,cuda-mps-server,bug-report.sh} %{buildroot}%{_bindir}
@@ -322,7 +322,7 @@ fi ||:
 %{_libdir}/nvidia/alternate-install-present
 %{_libdir}/nvidia/xorg
 %{_libdir}/xorg/modules/drivers/nvidia_drv.so
-%{_modprobe_d}/blacklist-nouveau.conf
+%{_modprobe_d}/nvidia.conf
 # X.org configuration files
 %config(noreplace) %{_sysconfdir}/X11/xorg.conf.d/99-nvidia-modules.conf
 
@@ -402,15 +402,9 @@ fi ||:
   inserting the nvidia-uvm configuration file in the initrd. Since the module is
   not (and should not be) in the initrd, this prevents the (harmless) module
   loading error in Plymouth.
-- Move all libraries that do not replace system libraries in the default
-  directories. There is no reason to keep them separate and this helps for
-  building programs that link to these libraries (like nvidia-settings on NVML)
-  and for writing out filters in the SPEC file.
-- Rework completely symlink creation using ldconfig, remove useless symlink and
-  trim devel subpackage.
 - Remove ARM (Carma, Kayla) support.
-- Ignore ABI configuration file moved to Fedora 24+.
 - Use new X.org OutputClass loader for RHEL 7 (X.org 1.16+, RHEL 7.2+).
+- Rename blacklist-nouveau.conf to nvidia.conf.
 
 * Tue Nov 17 2015 Simone Caronni <negativo17@gmail.com> - 2:340.96-1
 - Update to 340.96.
@@ -420,6 +414,12 @@ fi ||:
 - Remove support for Grub 0.97 in Fedora or CentOS/RHEL 7.
 - Update modprobe configuration file position in CentOS/RHEL 6.
 - Ignore ABI configuration file moved to Fedora 24+.
+- Move all libraries that do not replace system libraries in the default
+  directories. There is no reason to keep them separate and this helps for
+  building programs that link to these libraries (like nvidia-settings on NVML)
+  and for writing out filters in the SPEC file.
+- Rework completely symlink creation using ldconfig, remove useless symlink and
+  trim devel subpackage.
 
 * Tue Sep 08 2015 Simone Caronni <negativo17@gmail.com> - 2:340.93-1
 - Update to 340.93.
