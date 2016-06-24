@@ -29,7 +29,7 @@
 
 Name:           nvidia-driver
 Version:        340.96
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        NVIDIA's proprietary display driver for NVIDIA graphic cards
 Epoch:          2
 License:        NVIDIA License
@@ -233,7 +233,7 @@ install -p -m 0644 %{SOURCE13} %{buildroot}%{_sysconfdir}/X11/xorg.conf.nvidia
 install -p -m 0644 %{SOURCE11} %{buildroot}%{_datadir}/X11/xorg.conf.d/10-nvidia-driver.conf
 %endif
 
-%if 0%{?fedora} > 23 || 0%{?rhel} > 7
+%if 0%{?fedora} > 24 || 0%{?rhel} > 7
 install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/99-nvidia-ignoreabi.conf
 %endif
 
@@ -334,7 +334,7 @@ fi ||:
 %{_datadir}/X11/xorg.conf.d/10-nvidia-driver.conf
 %endif
 
-%if 0%{?fedora} > 23 || 0%{?rhel} > 7
+%if 0%{?fedora} > 24 || 0%{?rhel} > 7
 %config(noreplace) %{_sysconfdir}/X11/xorg.conf.d/99-nvidia-ignoreabi.conf
 %endif
 
@@ -397,6 +397,9 @@ fi ||:
 %{_includedir}/nvidia/
 
 %changelog
+* Fri Jun 24 2016 Simone Caronni <negativo17@gmail.com> - 2:340.96-3
+- Ignore X.org ABI from Fedora 25+.
+
 * Thu Jun 23 2016 Simone Caronni <negativo17@gmail.com> - 2:340.96-2
 - Load nvidia-uvm.ko through a soft dependency on nvidia.ko. This avoids
   inserting the nvidia-uvm configuration file in the initrd. Since the module is
