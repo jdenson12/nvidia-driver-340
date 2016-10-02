@@ -28,8 +28,8 @@
 %endif
 
 Name:           nvidia-driver
-Version:        340.96
-Release:        3%{?dist}
+Version:        340.98
+Release:        1%{?dist}
 Summary:        NVIDIA's proprietary display driver for NVIDIA graphic cards
 Epoch:          2
 License:        NVIDIA License
@@ -397,6 +397,10 @@ fi ||:
 %{_includedir}/nvidia/
 
 %changelog
+* Sun Oct 02 2016 Simone Caronni <negativo17@gmail.com> - 2:340.98-1
+- Update to 340.98.
+- Remove ARM support also from tarball generation script.
+
 * Fri Jun 24 2016 Simone Caronni <negativo17@gmail.com> - 2:340.96-3
 - Ignore X.org ABI from Fedora 25+.
 

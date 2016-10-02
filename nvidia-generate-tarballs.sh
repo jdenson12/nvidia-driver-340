@@ -1,9 +1,9 @@
 #!/bin/sh -x
 set -e
 
-VERSION=340.96
-DL_SITE=ftp://download.nvidia.com/XFree86
-#DL_SITE=http://us.download.nvidia.com/XFree86
+VERSION=340.98
+#DL_SITE=ftp://download.nvidia.com/XFree86
+DL_SITE=http://us.download.nvidia.com/XFree86
 
 create_tarball() {
     KMOD=nvidia-kmod-${VERSION}-${ARCH}
@@ -25,10 +25,8 @@ create_tarball() {
     rm -f libnvidia-wfb*
 
     # Use correct tls implementation
-    if [ ${ARCH} == "i386" -o ${ARCH} == "x86_64" ]; then
-        mv -f tls/libnvidia-tls.so* .
-        rm -fr tls
-    fi
+    mv -f tls/libnvidia-tls.so* .
+    rm -fr tls
 
     mv kernel ../${KMOD}/
     mv * ../${DRIVER}/
@@ -50,10 +48,4 @@ create_tarball
 ARCH=x86_64
 wget -c ${DL_SITE}/Linux-${ARCH}/${VERSION}/NVIDIA-Linux-${ARCH}-${VERSION}-no-compat32.run
 mv NVIDIA-Linux-${ARCH}-${VERSION}-no-compat32.run nvidia-${VERSION}-${ARCH}.run
-create_tarball
-
-ARCH=armv7hl
-wget -c ${DL_SITE}/Linux-32bit-ARM/${VERSION}/NVIDIA-Linux-armv7l-gnueabihf-${VERSION}.run
-#wget -c ${DL_SITE}/Linux-x86-ARM/${VERSION}/NVIDIA-Linux-armv7l-gnueabihf-${VERSION}.run
-mv NVIDIA-Linux-armv7l-gnueabihf-${VERSION}.run nvidia-${VERSION}-${ARCH}.run
 create_tarball
