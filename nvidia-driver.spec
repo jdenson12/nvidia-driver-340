@@ -28,7 +28,7 @@
 %endif
 
 Name:           nvidia-driver
-Version:        340.101
+Version:        340.102
 Release:        1%{?dist}
 Summary:        NVIDIA's proprietary display driver for NVIDIA graphic cards
 Epoch:          2
@@ -116,7 +116,8 @@ This package provides the shared libraries for %{name}.
 %package cuda
 Summary:        CUDA integration for %{name}
 Requires:       nvidia-persistenced = %{?epoch}:%{version}
-%if 0%{?fedora} || 0%{?rhel} >= 8
+%if 0%{?fedora} || 0%{?rhel} >= 7
+Requires:       ocl-icd
 Requires:       opencl-filesystem
 %endif
 
@@ -259,8 +260,11 @@ cp -a \
     libGLESv1_CM.so* \
     libGLESv2.so* \
     libEGL.so* \
-    libOpenCL.so* \
     %{buildroot}%{_libdir}/nvidia/
+
+%if 0%{?rhel} == 6
+cp -a libOpenCL.so* %{buildroot}%{_libdir}
+%endif
 
 # Install unique libraries
 cp -a libcuda.so* libnv*.so* \
@@ -380,8 +384,10 @@ fi ||:
 %{_libdir}/libnvidia-encode.so.%{version}
 %{_libdir}/libnvidia-opencl.so.1
 %{_libdir}/libnvidia-opencl.so.%{version}
-%{_libdir}/nvidia/libOpenCL.so.1
-%{_libdir}/nvidia/libOpenCL.so.1.0.0
+%if 0%{?rhel} == 6
+%{_libdir}/libOpenCL.so.1
+%{_libdir}/libOpenCL.so.1.0.0
+%endif
 
 %files NvFBCOpenGL
 %{_libdir}/libnvidia-fbc.so.1
@@ -397,6 +403,10 @@ fi ||:
 %{_includedir}/nvidia/
 
 %changelog
+* Thu Feb 23 2017 Simone Caronni <negativo17@gmail.com> - 2:340.102-1
+- Udpate to 340.102.
+- Install the OpenCL loader only on RHEL < 7 and in the system path.
+
 * Thu Dec 15 2016 Simone Caronni <negativo17@gmail.com> - 2:340.101-1
 - Update to 340.101.
 
