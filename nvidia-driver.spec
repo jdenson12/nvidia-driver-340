@@ -28,7 +28,7 @@
 %endif
 
 Name:           nvidia-driver
-Version:        340.102
+Version:        340.104
 Release:        1%{?dist}
 Summary:        NVIDIA's proprietary display driver for NVIDIA graphic cards
 Epoch:          2
@@ -403,6 +403,9 @@ fi ||:
 %{_includedir}/nvidia/
 
 %changelog
+* Fri Dec 22 2017 Jemma Denson <jdenson@gmail.com> - 2:340.104-1
+- Update to 340.104.
+
 * Thu Feb 23 2017 Simone Caronni <negativo17@gmail.com> - 2:340.102-1
 - Udpate to 340.102.
 - Install the OpenCL loader only on RHEL < 7 and in the system path.
