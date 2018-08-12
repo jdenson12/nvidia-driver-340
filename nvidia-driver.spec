@@ -39,8 +39,8 @@
 %endif
 
 Name:           nvidia-driver
-Version:        340.104
-Release:        2%{?dist}
+Version:        340.107
+Release:        1%{?dist}
 Summary:        NVIDIA's proprietary display driver for NVIDIA graphic cards
 Epoch:          2
 License:        NVIDIA License
@@ -506,6 +506,9 @@ fi ||:
 %{_libdir}/libnvidia-encode.so
 
 %changelog
+* Sun Aug 12 2018 Jemma Denson <jdenson@gmail.com> - 2:340.104-1
+- Update to 340.107
+
 * Sat Dec 23 2017 Jemma Denson <jdenson@gmail.com> - 2:340.104-2
 - Merge in negativo17 changes from latest:
 - Make the major number of Nvidia devices dynamic again:
